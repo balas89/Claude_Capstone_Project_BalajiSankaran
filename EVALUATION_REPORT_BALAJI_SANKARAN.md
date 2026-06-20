@@ -137,24 +137,7 @@
      * Note: These services follow MCP-like principles (independent, specialized) but use HTTP REST for communication
      * Current implementation is fully acceptable and functional
 
-#### 2. **Synchronous HTTP in Async Context** (Optional - Performance Optimization)
-   - **Observation:** Agents use `requests` library (synchronous) within async functions
-   - **Technical Impact:** MINOR - doesn't break functionality but blocks event loop
-   - **Performance Impact:** Could impact scalability under high concurrency
-   - **Recommendation:**
-     * Replace `requests` with `aiohttp` for true async HTTP calls
-     * Migrate all agent HTTP calls to async:
-       ```python
-       # Current (synchronous in async function)
-       response = requests.post(...)
-       
-       # Better (truly async)
-       async with aiohttp.ClientSession() as session:
-           async with session.post(...) as response:
-               data = await response.json()
-       ```
-
-#### 4. **✅ LangGraph Properly Integrated as Graph Engine**
+#### 2. **✅ LangGraph Properly Integrated as Graph Engine**
    - **Technical Impact:** POSITIVE - enables parallel execution and graph composition
    - **Performance Impact:** Parallel workflow optimization
    - **Implementation Details:**
@@ -170,7 +153,7 @@
      * State reducers for better error tracking
      * Production-ready LangGraph patterns
 
-#### 5. **Security Hardening Needed for Production**
+#### 3. **Security Hardening Needed for Production**
    - **Observation:** System lacks authentication, rate limiting, and encryption
    - **Technical Impact:** ACCEPTABLE for demonstration, NOT suitable for real banking
    - **Recommendation for Production:**
@@ -182,7 +165,7 @@
      * Implement API key management
      * Add comprehensive audit logging
 
-#### 6. **No Persistent Database**
+#### 4. **No Persistent Database**
    - **Observation:** Uses mock databases only, no SQL/NoSQL persistence
    - **Technical Impact:** ACCEPTABLE for demo, not for production
    - **Recommendation:**
@@ -198,7 +181,7 @@
      * Consider PostgreSQL for production
      * Implement data migration strategy
 
-#### 7. **Limited Test Coverage**
+#### 5. **Limited Test Coverage**
    - **Observation:** Integration/E2E tests provided, but no unit tests
    - **Technical Impact:** ACCEPTABLE for demo, but risky for production
    - **Recommendation:**
@@ -213,7 +196,7 @@
      * Aim for 80%+ code coverage
      * Add performance benchmarking tests
 
-#### 8. **No Monitoring/Observability**
+#### 6. **No Monitoring/Observability**
    - **Observation:** System lacks logging infrastructure and monitoring dashboards
    - **Technical Impact:** CRITICAL for production, acceptable for demo
    - **Recommendation:**
