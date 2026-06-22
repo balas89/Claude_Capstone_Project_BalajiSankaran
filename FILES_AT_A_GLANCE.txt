@@ -1,0 +1,411 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                  CAPSTONE PROJECT 3: FILES AT A GLANCE                         ║
+║            Multi-Agent Agentic AI Loan Approval System                         ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+📁 PROJECT STRUCTURE SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+🤖 AGENTS LAYER (agents/)
+────────────────────────────────────────────────────────────────────────────────
+  applicant_agent.py              Agent 1: Analyzes applicant profile & data
+                                  - Validates completeness, calculates income stability
+                                  - Assesses employment risk, summarizes credit history
+                                  
+  financial_risk_agent.py         Agent 2: Evaluates financial metrics
+                                  - Calculates DTI, LTI ratios
+                                  - Detects financial anomalies
+                                  
+  loan_decision_agent.py          Agent 3: Synthesizes final decision
+                                  - Applies business rules engine
+                                  - Makes Approve/Reject/Review decision
+                                  
+  compliance_agent.py             Agent 4: Ensures compliance & notifications
+                                  - Sends notifications, records audit trail
+                                  - Logs decisions for regulatory requirements
+
+
+🔌 MCP SERVERS (mcp_servers/) - 4 Independent Microservices
+────────────────────────────────────────────────────────────────────────────────
+  applicant_db.py                 MCP Server 1 (Port 8001)
+                                  - Applicant data queries
+                                  - Credit history lookups
+                                  
+  risk_rules_db.py                MCP Server 2 (Port 8002)
+                                  - Financial risk calculations
+                                  - DTI/LTI computations
+                                  
+  decision_synthesis.py           MCP Server 3 (Port 8003)
+                                  - Business rules engine
+                                  - Decision logic (NOT LLM-based)
+                                  
+  notification_system.py          MCP Server 4 (Port 8004)
+                                  - Notifications & audit logging
+                                  - Case tracking
+
+
+🌐 MICROSERVICES (microservices/) - REST API
+────────────────────────────────────────────────────────────────────────────────
+  app.py                          FastAPI application setup (Port 8000)
+                                  - Creates FastAPI instance
+                                  - Configures CORS, initializes workflow
+                                  
+  schemas.py                      Pydantic validation models
+                                  - LoanApplication (input)
+                                  - Profile/Financial/Decision/Compliance results
+                                  - LoanDecisionResponse (output)
+                                  
+  routes.py                       REST API endpoints
+                                  - POST /apply-loan (main endpoint)
+                                  - GET /health (service health)
+
+
+🔗 ORCHESTRATION (orchestration/) - LangGraph Workflow
+────────────────────────────────────────────────────────────────────────────────
+  workflow.py                     LangGraph orchestration engine
+                                  - Builds workflow graph
+                                  - Coordinates 4 agents (parallel & sequential)
+                                  - Manages workflow state
+                                  
+  state.py                        Workflow state definitions
+                                  - ApplicationState (input structure)
+                                  - WorkflowState (complete state)
+
+
+🎨 USER INTERFACE (ui/) - Streamlit
+────────────────────────────────────────────────────────────────────────────────
+  streamlit_app.py                Streamlit chatbot interface (Port 8501)
+                                  - Application form (9 fields)
+                                  - Decision results display
+                                  - Application history tracking
+
+
+🛠️  UTILITIES (utils/) - Configuration & Business Logic
+────────────────────────────────────────────────────────────────────────────────
+  config.py                       Configuration management
+                                  - ANTHROPIC_API_KEY loading
+                                  - Port & model configurations
+                                  
+  decision_rules.py               Business rules engine (255 lines)
+                                  - Hard rejections: DTI ≥ 50%, Credit < 600
+                                  - Approvals: DTI < 43%, Credit ≥ 650, LTI < 3.0
+                                  - Manual review: Mixed signals
+                                  - Risk score calculations
+                                  
+  mock_data.py                    Mock databases & test data
+                                  - Credit history data
+                                  - Employment records
+
+
+🧪 TESTING (root directory)
+────────────────────────────────────────────────────────────────────────────────
+  test_units.py                   Unit tests (9 test cases)
+                                  - Tests decision rules
+                                  - All 9 tests PASS
+                                  - Run: python test_units.py
+                                  
+  test_api.py                     Integration tests
+                                  - Tests full workflow
+                                  - Requires all services running
+                                  
+  test_interactive.py             Interactive manual testing
+                                  - Prompts for application data
+                                  - Allows multiple submissions
+
+
+🐳 DOCKER & DEPLOYMENT (root directory)
+────────────────────────────────────────────────────────────────────────────────
+  Dockerfile                      Container image definition
+                                  - Python 3.11 slim base
+                                  - Installs dependencies
+                                  
+  docker-compose.yml              Service orchestration
+                                  - 6 services with dependencies
+                                  - Health checks
+                                  
+  run_all.sh                      Start all services (1 command!)
+                                  - Activates venv, starts 6 services
+                                  - Auto-opens browser
+                                  
+  stop_all.sh                      Stop all services
+                                  - Graceful shutdown
+
+
+📋 CONFIGURATION (root directory)
+────────────────────────────────────────────────────────────────────────────────
+  requirements.txt                Python dependencies
+                                  - FastAPI, LangGraph, Streamlit, etc.
+                                  
+  .env                            Environment variables (NOT committed)
+                                  - ANTHROPIC_API_KEY required
+                                  
+  .env.example                    Environment template
+
+
+📚 DOCUMENTATION (17+ files)
+────────────────────────────────────────────────────────────────────────────────
+  README.md                       Main documentation
+  QUICKSTART.md                   Quick start guide
+  ARCHITECTURE.md                 Architecture details
+  RUN_TESTS.md                    Testing guide (4 options)
+  DEPLOYMENT_QUICK_START.md       Docker deployment reference
+  PROJECT_SUMMARY.md              Project overview
+  
+  ⭐ PROJECT_STRUCTURE_GUIDE.md    Complete structure explanation (NEW)
+  ⭐ PROJECT_DETAILED_BREAKDOWN.md File-by-file breakdown (NEW)
+  ⭐ COMPLETE_PROJECT_EXPLANATION.md Comprehensive guide (NEW)
+  ⭐ FILES_AT_A_GLANCE.txt         This file (NEW)
+  
+  EVALUATION_REPORT_*.md          Comprehensive evaluation
+  [More documentation files]
+
+
+════════════════════════════════════════════════════════════════════════════════
+📊 KEY STATISTICS
+════════════════════════════════════════════════════════════════════════════════
+
+Total Files:
+  • Python files: 18+
+  • Documentation: 17+
+  • Configuration: 3
+  • Docker: 4
+  • Total: 45+ files
+
+Lines of Code:
+  • Total LOC: ~2,500+
+  • agents/: ~340 lines
+  • mcp_servers/: ~450 lines
+  • microservices/: ~160 lines
+  • orchestration/: ~310 lines
+  • utils/: ~440 lines (includes decision_rules.py 255 lines)
+  • tests/: ~585 lines
+
+Services:
+  • MCP servers: 4
+  • FastAPI: 1
+  • Streamlit: 1
+  • Total: 6 services
+
+API Endpoints:
+  • REST endpoints: 2
+  • MCP endpoints: 8+
+
+Ports:
+  • 8001: Applicant DB MCP
+  • 8002: Risk Rules DB MCP
+  • 8003: Decision Synthesis MCP
+  • 8004: Notification System MCP
+  • 8000: FastAPI
+  • 8501: Streamlit
+
+Testing:
+  • Unit test cases: 9
+  • All tests: ✅ PASS
+  • Testing options: 4
+
+Git:
+  • Total commits: 30+
+  • Active development: Complete
+
+
+════════════════════════════════════════════════════════════════════════════════
+🎯 QUICK REFERENCE: WHICH FILE TO MODIFY?
+════════════════════════════════════════════════════════════════════════════════
+
+Need                            File(s) to Modify
+─────────────────────────────────────────────────────────────
+Change decision logic           utils/decision_rules.py
+Add form field                  ui/streamlit_app.py + microservices/schemas.py
+Modify agent behavior           agents/applicant_agent.py (or relevant agent)
+Change API response             microservices/schemas.py + routes.py
+Add API endpoint                microservices/routes.py
+Change MCP behavior             mcp_servers/*.py
+Update mock data                utils/mock_data.py
+Change UI appearance            ui/streamlit_app.py
+Update configuration            utils/config.py or .env
+Add test case                   test_units.py or test_api.py
+Change deployment               Dockerfile, docker-compose.yml, run_all.sh
+
+
+════════════════════════════════════════════════════════════════════════════════
+🔄 EXECUTION FLOW
+════════════════════════════════════════════════════════════════════════════════
+
+1. USER INTERACTION
+   └─> Streamlit UI (streamlit_app.py)
+       • User fills 9-field form
+       • Clicks "Submit Application"
+
+2. DATA SUBMISSION
+   └─> FastAPI endpoint (microservices/routes.py)
+       • HTTP POST /apply-loan
+       • Pydantic validates (microservices/schemas.py)
+
+3. WORKFLOW ORCHESTRATION
+   └─> LangGraph (orchestration/workflow.py)
+       • Initialize state
+       • Agent 1 & 2 run in PARALLEL (both simultaneously)
+       • Agent 3 runs after parallel
+       • Agent 4 runs after Agent 3
+       • Finalize
+
+4. AGENT EXECUTION
+   ├─> Agent 1 (applicant_agent.py)
+   │   └─> MCP 1 (mcp_servers/applicant_db.py)
+   │       └─> Mock data (utils/mock_data.py)
+   │
+   ├─> Agent 2 (financial_risk_agent.py)
+   │   └─> MCP 2 (mcp_servers/risk_rules_db.py)
+   │       └─> Mock data (utils/mock_data.py)
+   │
+   ├─> Agent 3 (loan_decision_agent.py)
+   │   └─> MCP 3 (mcp_servers/decision_synthesis.py)
+   │       └─> Business rules (utils/decision_rules.py)
+   │
+   └─> Agent 4 (compliance_agent.py)
+       └─> MCP 4 (mcp_servers/notification_system.py)
+
+5. RESPONSE BUILDING
+   └─> LoanDecisionResponse (microservices/schemas.py)
+       • Decision, risk score, factors
+       • Detailed analysis
+       • Audit trail
+
+6. UI DISPLAY
+   └─> Streamlit (streamlit_app.py)
+       • Color-coded decision
+       • Risk score & confidence
+       • Detailed analysis tabs
+       • Application history
+
+
+════════════════════════════════════════════════════════════════════════════════
+🚀 GETTING STARTED (3 STEPS)
+════════════════════════════════════════════════════════════════════════════════
+
+Step 1: Setup (One-time)
+────────────────────────
+cp .env.example .env
+# Edit .env and add: ANTHROPIC_API_KEY=sk-...
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+Step 2: Test
+────────────
+python test_units.py
+# ✅ All 9 tests should PASS
+
+Step 3: Run
+──────────
+bash run_all.sh
+# Browser opens at http://localhost:8501
+# Fill form and submit!
+
+
+════════════════════════════════════════════════════════════════════════════════
+📖 DOCUMENTATION QUICK LINKS
+════════════════════════════════════════════════════════════════════════════════
+
+For...                              Read This File
+─────────────────────────────────────────────────────────────
+Quick start                         QUICKSTART.md
+Architecture overview               ARCHITECTURE.md
+Project structure explanation       PROJECT_STRUCTURE_GUIDE.md
+Detailed file breakdown             PROJECT_DETAILED_BREAKDOWN.md
+Complete project explanation        COMPLETE_PROJECT_EXPLANATION.md
+Testing guide                       RUN_TESTS.md
+Deployment reference                DEPLOYMENT_QUICK_START.md
+Business logic details              utils/decision_rules.py
+Running the system                  README.md
+
+
+════════════════════════════════════════════════════════════════════════════════
+✨ KEY FEATURES
+════════════════════════════════════════════════════════════════════════════════
+
+✅ Multi-Agent Architecture
+   • 4 specialized AI agents
+   • Each with single responsibility
+   • Easy to test and modify independently
+
+✅ Business Rules Engine
+   • Deterministic decisions (not LLM-based)
+   • Hard rejections (DTI ≥ 50%, Credit < 600)
+   • Clear approval criteria
+   • Manual review for edge cases
+
+✅ LangGraph Orchestration
+   • Parallel execution (Agent 1 & 2 simultaneously)
+   • Sequential execution when needed
+   • State management
+   • Error handling
+
+✅ Microservices Design
+   • Loose coupling (agents don't know about each other)
+   • MCP protocol for communication
+   • Can swap implementations
+   • Scales horizontally
+
+✅ FastAPI REST Layer
+   • Clean API design
+   • Automatic validation
+   • Fast performance
+   • Easy to integrate
+
+✅ Streamlit UI
+   • Interactive form
+   • Real-time results
+   • Application history
+   • Service health monitoring
+
+✅ Docker Deployment
+   • Single command: bash run_all.sh
+   • 6 services orchestrated
+   • Health checks
+   • Production-ready
+
+✅ Comprehensive Testing
+   • 9 unit tests
+   • 4 testing options
+   • 100% decision rule coverage
+   • Interactive manual testing
+
+
+════════════════════════════════════════════════════════════════════════════════
+📊 DECISION LOGIC SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+
+Hard Rejections (Automatic ❌)
+  • DTI ≥ 50%
+  • Credit Score < 600
+  • 2+ severe anomalies (bankruptcy, foreclosure)
+
+Approvals (All criteria met ✅)
+  • DTI < 43%
+  • Credit Score ≥ 650
+  • LTI < 3.0x
+  • Low employment risk
+  • No major anomalies
+
+Manual Review (Mixed signals 🔄)
+  • DTI 43-50%
+  • Credit Score 600-650
+  • Multiple moderate factors
+
+Risk Score Calculation:
+  • DTI (30% weight): 0-0.30
+  • Credit (25% weight): 0-0.25
+  • LTI (20% weight): 0-0.20
+  • Income Stability (15% weight): 0-0.15
+  • Employment Risk (10% weight): 0-0.10
+  • Anomalies (5% weight): 0-0.10
+  Total: 0.0 (safest) to 1.0 (riskiest)
+
+
+════════════════════════════════════════════════════════════════════════════════
+Generated: 2026-06-22
+Project: Multi-Agent Agentic AI Loan Approval System
+Status: ✅ Production Ready
+Repository: https://github.com/balas89/Claude_Capstone_Project_BalajiSankaran
+════════════════════════════════════════════════════════════════════════════════
