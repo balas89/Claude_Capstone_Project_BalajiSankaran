@@ -78,44 +78,39 @@ class LoanApprovalWorkflow:
 
     def _analyze_applicant_profile(
         self, state: WorkflowState
-    ) -> WorkflowState:
-        """Execute applicant profile analysis agent"""
+    ) -> dict:
+        """Execute applicant profile analysis agent (parallel node)"""
         try:
-            state["current_step"] = "analyzing_profile"
             application = state["application"]
-
-            app_state = ApplicationState(application=application)
             result = run(
                 self.applicant_agent.analyze(application)
             )
 
-            state["applicant_profile_result"] = result
-            return state
+            return {
+                "applicant_profile_result": result
+            }
         except Exception as e:
-            state["errors"].append(
-                f"Profile analysis error: {str(e)}"
-            )
-            return state
+            return {
+                "errors": [f"Profile analysis error: {str(e)}"]
+            }
 
     def _analyze_financial_risk(
         self, state: WorkflowState
-    ) -> WorkflowState:
-        """Execute financial risk analysis agent (parallel with profile)"""
+    ) -> dict:
+        """Execute financial risk analysis agent (parallel node)"""
         try:
-            state["current_step"] = "analyzing_financial_risk"
             application = state["application"]
-
             result = run(
                 self.financial_risk_agent.analyze(application)
             )
 
-            state["financial_risk_result"] = result
-            return state
+            return {
+                "financial_risk_result": result
+            }
         except Exception as e:
-            state["errors"].append(
-                f"Financial risk analysis error: {str(e)}"
-            )
-            return state
+            return {
+                "errors": [f"Financial risk analysis error: {str(e)}"]
+            }
 
     def _synthesize_decision(
         self, state: WorkflowState
@@ -212,52 +207,67 @@ class LoanApprovalWorkflow:
         self, state: WorkflowState
     ) -> LoanDecisionResponse:
         """Build final response from LangGraph state"""
-        if state.get("errors"):
+        from microservices.schemas import (
+            ApplicantProfileResult, FinancialRiskResult, ComplianceResult
+        )
+
+        # Ensure all required results exist
+        if not state.get("applicant_profile_result"):
             return LoanDecisionResponse(
                 case_id=state["case_id"],
-                applicant_id=(
-                    state["application"].applicant_id
-                ),
+                applicant_id=state["application"].applicant_id,
                 decision="Requires Manual Review",
                 risk_score=0.5,
                 confidence=0.0,
-                factors=state["errors"],
-                explanation=(
-                    f"Error during processing: "
-                    f"{', '.join(state['errors'])}"
+                factors=state.get("errors", ["Incomplete analysis"]),
+                explanation="Workflow did not complete successfully",
+                profile_analysis=ApplicantProfileResult(
+                    applicant_id=state["application"].applicant_id,
+                    income_stability_score=0.0,
+                    employment_risk="Unknown",
+                    credit_history_summary={},
+                    completeness_flags=state.get("errors", [])
                 ),
-                profile_analysis=state.get(
-                    "applicant_profile_result"
-                ) or {},
-                financial_analysis=state.get(
-                    "financial_risk_result"
-                ) or {},
-                compliance_status=state.get(
-                    "compliance_result"
-                ) or {},
+                financial_analysis=FinancialRiskResult(
+                    applicant_id=state["application"].applicant_id,
+                    dti_ratio=0.0,
+                    credit_risk_level="Unknown",
+                    loan_amount_risk="Unknown",
+                    anomalies=[],
+                    reasoning="Analysis incomplete"
+                ),
+                compliance_status=ComplianceResult(
+                    applicant_id=state["application"].applicant_id,
+                    action_taken="Pending",
+                    notification_sent=False,
+                    case_id=state["case_id"],
+                    timestamp=datetime.now().isoformat(),
+                    summary="Analysis incomplete"
+                ),
                 timestamp=datetime.now().isoformat(),
             )
 
         decision = state["loan_decision_result"]
+        compliance = state.get("compliance_result") or ComplianceResult(
+            applicant_id=state["application"].applicant_id,
+            action_taken="Pending",
+            notification_sent=False,
+            case_id=state["case_id"],
+            timestamp=datetime.now().isoformat(),
+            summary="Compliance check pending"
+        )
+
         return LoanDecisionResponse(
             case_id=state["case_id"],
-            applicant_id=(
-                state["application"].applicant_id
-            ),
+            applicant_id=state["application"].applicant_id,
             decision=decision.decision,
             risk_score=decision.risk_score,
             confidence=decision.confidence_level,
             factors=decision.key_factors,
             explanation=decision.explanation,
-            profile_analysis=(
-                state["applicant_profile_result"]
-            ),
-            financial_analysis=(
-                state["financial_risk_result"]
-            ),
-            compliance_status=(
-                state["compliance_result"]
-            ),
+            profile_analysis=state["applicant_profile_result"],
+            financial_analysis=state["financial_risk_result"],
+            compliance_status=compliance,
             timestamp=datetime.now().isoformat(),
         )
 
