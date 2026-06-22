@@ -60,20 +60,36 @@ with col1:
     st.markdown("### 📝 Application Form")
 
     with st.form("loan_application_form"):
-        applicant_id = st.text_input("Applicant ID", value="APP001")
-        age = st.number_input("Age", min_value=18, max_value=100, value=35)
-        income = st.number_input("Annual Income ($)", min_value=20000, max_value=500000, value=80000, step=5000)
+        st.markdown("#### 👤 Personal Information")
+        col_a1, col_a2, col_a3 = st.columns(3)
+        with col_a1:
+            applicant_id = st.text_input("Applicant ID", value="APP001")
+        with col_a2:
+            age = st.number_input("Age", min_value=18, max_value=100, value=35)
+        with col_a3:
+            location = st.selectbox("Location", ["New York", "California", "Texas", "Florida", "Other"])
 
-        col_emp1, col_emp2 = st.columns(2)
-        with col_emp1:
-            employment_type = st.selectbox("Employment Type", ["Salaried", "Self-Employed", "Freelance", "Retired"])
-        with col_emp2:
+        st.markdown("#### 💰 Financial Information")
+        col_f1, col_f2, col_f3 = st.columns(3)
+        with col_f1:
+            income = st.number_input("Annual Income ($)", min_value=20000, max_value=500000, value=80000, step=5000)
+        with col_f2:
             credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=720)
+        with col_f3:
+            existing_liabilities = st.number_input("Monthly Liabilities ($)", min_value=0, max_value=500000, value=2500, step=500)
 
-        loan_amount = st.number_input("Requested Loan Amount ($)", min_value=10000, max_value=500000, value=150000, step=10000)
-        tenure_months = st.number_input("Loan Tenure (months)", min_value=6, max_value=360, value=60, step=6)
-        existing_liabilities = st.number_input("Existing Liabilities ($)", min_value=0, max_value=500000, value=25000, step=5000)
-        location = st.selectbox("Location", ["New York", "California", "Texas", "Florida", "Other"])
+        st.markdown("#### 💼 Employment & Loan Details")
+        col_e1, col_e2 = st.columns(2)
+        with col_e1:
+            employment_type = st.selectbox("Employment Type", ["Salaried", "Self-Employed", "Freelance", "Retired"])
+        with col_e2:
+            loan_amount = st.number_input("Requested Loan Amount ($)", min_value=10000, max_value=500000, value=150000, step=10000)
+
+        col_l1, col_l2 = st.columns(2)
+        with col_l1:
+            tenure_months = st.number_input("Loan Tenure (months)", min_value=6, max_value=360, value=60, step=6)
+        with col_l2:
+            st.empty()
 
         submit_button = st.form_submit_button("🚀 Submit Application", use_container_width=True)
 
@@ -203,6 +219,14 @@ if submit_button and response.status_code == 200:
     st.session_state.application_history.insert(0, {
         "timestamp": datetime.now().isoformat(),
         "applicant_id": applicant_id,
+        "age": age,
+        "income": income,
+        "credit_score": credit_score,
+        "employment_type": employment_type,
+        "loan_amount": loan_amount,
+        "tenure_months": tenure_months,
+        "existing_liabilities": existing_liabilities,
+        "location": location,
         "decision": result.get("decision"),
         "risk_score": result.get("risk_score"),
         "case_id": result.get("case_id"),
@@ -212,4 +236,4 @@ if st.session_state.application_history:
     st.markdown("### 📜 Application History (Session)")
     for idx, app in enumerate(st.session_state.application_history[:10]):
         decision_icon = "✅" if app["decision"] == "Approve" else "❌" if app["decision"] == "Reject" else "⚠️"
-        st.write(f"{decision_icon} {app['case_id']} - {app['applicant_id']} ({app['risk_score']:.1%} risk)")
+        st.write(f"{decision_icon} {app['case_id']} - {app['applicant_id']} | Age: {app['age']} | Income: ${app['income']:,.0f} | Credit: {app['credit_score']} | Loan: ${app['loan_amount']:,.0f} | Tenure: {app['tenure_months']}m | DTI Risk: {app['risk_score']:.1%}")
