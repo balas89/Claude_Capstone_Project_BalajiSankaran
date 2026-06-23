@@ -63,31 +63,31 @@ with col1:
         st.markdown("#### 👤 Personal Information")
         col_a1, col_a2, col_a3 = st.columns(3)
         with col_a1:
-            applicant_id = st.text_input("Applicant ID", value="APP001")
+            applicant_id = st.text_input("Applicant ID", placeholder="e.g., APP001")
         with col_a2:
-            age = st.number_input("Age", min_value=18, max_value=100, value=35)
+            age = st.number_input("Age", min_value=18, max_value=100, step=1)
         with col_a3:
-            location = st.selectbox("Location", ["New York", "California", "Texas", "Florida", "Other"])
+            location = st.selectbox("Location", ["Select...", "New York", "California", "Texas", "Florida", "Other"])
 
         st.markdown("#### 💰 Financial Information")
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
-            income = st.number_input("Annual Income ($)", min_value=20000, max_value=500000, value=80000, step=5000)
+            income = st.number_input("Annual Income ($)", min_value=20000, max_value=500000, step=5000)
         with col_f2:
-            credit_score = st.number_input("Credit Score", min_value=300, max_value=850, value=720)
+            credit_score = st.number_input("Credit Score", min_value=300, max_value=850, step=10)
         with col_f3:
-            existing_liabilities = st.number_input("Monthly Liabilities ($)", min_value=0, max_value=500000, value=2500, step=500)
+            existing_liabilities = st.number_input("Monthly Liabilities ($)", min_value=0, max_value=500000, step=500)
 
         st.markdown("#### 💼 Employment & Loan Details")
         col_e1, col_e2 = st.columns(2)
         with col_e1:
-            employment_type = st.selectbox("Employment Type", ["Salaried", "Self-Employed", "Freelance", "Retired"])
+            employment_type = st.selectbox("Employment Type", ["Select...", "Salaried", "Self-Employed", "Freelance", "Retired"])
         with col_e2:
-            loan_amount = st.number_input("Requested Loan Amount ($)", min_value=10000, max_value=500000, value=150000, step=10000)
+            loan_amount = st.number_input("Requested Loan Amount ($)", min_value=10000, max_value=500000, step=10000)
 
         col_l1, col_l2 = st.columns(2)
         with col_l1:
-            tenure_months = st.number_input("Loan Tenure (months)", min_value=6, max_value=360, value=60, step=6)
+            tenure_months = st.number_input("Loan Tenure (months)", min_value=6, max_value=360, step=6)
         with col_l2:
             st.empty()
 
